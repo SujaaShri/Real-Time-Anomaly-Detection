@@ -1,5 +1,5 @@
 # Real Time etwork Traffic Anomaly Detection
-This project builds a deep-learning-based network anomaly detection system that identifies abnormal traffic patterns in real time. Unlike traditional IDS approaches that rely on predefined attack signatures, this system detects anomalies by learning the normal behavior of network flows and flagging deviations automatically.
+This project builds a deep-learning-based network anomaly detection system using CICIDS dataset that identifies abnormal traffic patterns in real time. Unlike traditional IDS approaches that rely on predefined attack signatures, this system detects anomalies by learning the normal behavior of network flows and flagging deviations automatically.
 
 
 # Model Overview
