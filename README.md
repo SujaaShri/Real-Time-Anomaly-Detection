@@ -6,7 +6,7 @@ This project implements a deep-learning-based system using the CICIDS dataset to
 # Model Overview
 ## Flow Details:
 
-Multi-flow: Sequential windows of flows processed as a temporal pattern
+Single-flow: Each flow sample is computed from a small group of packets (5-packet window) and processed independently
 
 ## Channel Design:
 
