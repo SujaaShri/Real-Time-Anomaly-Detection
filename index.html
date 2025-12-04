@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Network Anomaly Detection Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0d1117;
+      color: #e6edf3;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      color: #58a6ff;
+      margin: 20px 0;
+    }
+    .container {
+      width: 95%;
+      margin: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background-color: #161b22;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #30363d;
+      text-align: center;
+    }
+    th {
+      background-color: #21262d;
+      color: #58a6ff;
+    }
+    tr:hover {
+      background-color: #1f6feb33;
+    }
+  </style>
+</head>
+<body>
+  <h1>Network Anomaly Detection Dashboard</h1>
+  <div class="container">
+
+    <!-- Table 1: Anomaly Overview -->
+    <h2>Recent Network Flows (Anomaly Status)</h2>
+    <table id="flowsTable">
+      <thead>
+        <tr>
+          <th>Src IP</th>
+          <th>Dst IP</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Table 2: Full Flow Details -->
+    <h2>Captured Flow Details</h2>
+    <table id="statsTable">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Src IP</th>
+          <th>Dst IP</th>
+          <th>Dst Port</th>
+          <th>Flow Duration</th>
+          <th>Total Fwd Pkts</th>
+          <th>Total Bwd Pkts</th>
+          <th>Flow Bytes/s</th>
+          <th>Flow Packets/s</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    // -------------------------
+    // Table 1: Recent Anomalies
+    // -------------------------
+    async function fetchFlows() {
+      try {
+        const res = await fetch('/flows');
+        const data = await res.json();
+        const tbody = document.querySelector('#flowsTable tbody');
+        tbody.innerHTML = '';
+
+        data.forEach(flow => {
+          const color = flow.Anomaly === "Anomalous (Simulated)" ? "#f85149" : "#3fb950";
+          const row = `<tr>
+            <td>${flow.SrcIP || 'Unknown'}</td>
+            <td>${flow.DstIP || 'Unknown'}</td>
+            <td style="color:${color}; font-weight:bold;">${flow.Anomaly}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      } catch (err) {
+        console.error('Error fetching flows:', err);
+      }
+    }
+
+    // -------------------------
+    // Table 2: Captured Flow Details
+    // -------------------------
+    async function fetchStats() {
+      try {
+        const res = await fetch('/stats');
+        const data = await res.json();
+        const tbody = document.querySelector('#statsTable tbody');
+        tbody.innerHTML = '';
+
+        // Reverse to show latest flows on top
+        data.reverse();
+
+        data.forEach(flow => {
+          const color = flow.Anomaly === "Anomalous (Simulated)" ? "#f85149" : "#3fb950";
+          const timestamp = new Date().toLocaleTimeString(); // local capture time
+          const row = `<tr>
+            <td>${timestamp}</td>
+            <td>${flow.SrcIP || 'Unknown'}</td>
+            <td>${flow.DstIP || 'Unknown'}</td>
+            <td>${flow['Destination Port']}</td>
+            <td>${flow['Flow Duration'].toFixed(2)}</td>
+            <td>${flow['Total Fwd Packets']}</td>
+            <td>${flow['Total Backward Packets']}</td>
+            <td>${flow['Flow Bytes/s'].toFixed(2)}</td>
+            <td>${flow['Flow Packets/s'].toFixed(2)}</td>
+            <td style="color:${color}; font-weight:bold;">${flow.Anomaly}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      } catch (err) {
+        console.error('Error fetching stats:', err);
+      }
+    }
+
+    // -------------------------
+    // Refresh both tables
+    // -------------------------
+    function refreshAll() {
+      fetchFlows();
+      fetchStats();
+    }
+
+    setInterval(refreshAll, 3000);
+    refreshAll();
+  </script>
+</body>
+</html>
