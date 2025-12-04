@@ -23,7 +23,7 @@ Captures temporal dependencies in network flows for anomaly detection
 Binary classification: Normal vs Anomalous
 Confidence score provided per flow; threshold applied to reduce false positives
 
-## Training & Evaluation
+# Training & Evaluation
 
 Dataset balanced across classes and normalized using StandardScaler
 Early stopping used to prevent overfitting
